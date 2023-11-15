@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import CardProduct from "../components/Fragments/CardProduct";
 import Button from "../components/Elements/Button";
 import Counter from "../components/Fragments/Counter";
@@ -33,29 +33,56 @@ const products = [
 const email = localStorage.getItem("email");
 
 const ProductsPage = () => {
-  const [cart, setCart] = useState([
-    {
-      id: 1,
-      qty: 1,
-    },
-  ]);
+  const [cart, setCart] = useState([]);
+  const [totalPrice, setTotalPrice] = useState(0);
+  useEffect(() => {
+    setCart(JSON.parse(localStorage.getItem("cart")) || []);
+  }, []);
+
+  useEffect(() => {
+    if (cart.length > 0) {
+      const sum = cart.reduce((acc, item) => {
+        const product = products.find((product) => product.id === item.id);
+        return acc + product.price * item.qty;
+      }, 0);
+      setTotalPrice(sum);
+      localStorage.setItem("cart", JSON.stringify(cart));
+    }
+  }, [cart]);
   const handleLogout = () => {
     localStorage.removeItem("email");
     localStorage.removeItem("password");
     window.location.href = "/login";
   };
 
-  const handleAddtoCart = (id) => {
-    if(cart.find((item) => item.id === id)){
-     setCart(
-       cart.map((item) =>
-         item.id === id ? { ...item, qty: item.qty + 1 } : item
-       )
-     );
-    }else{
-      setCart([...cart,{id,qty:1}])
+  const handleAddToCart = (id) => {
+    if (cart.find((item) => item.id === id)) {
+      setCart(
+        cart.map((item) =>
+          item.id === id ? { ...item, qty: item.qty + 1 } : item
+        )
+      );
+    } else {
+      setCart([...cart, { id, qty: 1 }]);
     }
   };
+
+  const handleAddToCartRef = (id) => {
+    cartRef.current = [...cartRef.current, { id: id, qty: 1 }];
+    localStorage.setItem("cart", JSON.stringify(cartRef.current));
+  };
+
+  const cartRef = useRef(JSON.parse(localStorage.getItem("cart")) || []);
+
+  const totalPriceRef = useRef(null);
+
+  useEffect(() => {
+    if (cart.length > 0) {
+      totalPriceRef.current.style.display = "table-row";
+    }else{
+       totalPriceRef.current.style.display = "none";
+    }
+  }, [cart]);
 
   return (
     <Fragment>
@@ -76,7 +103,7 @@ const ProductsPage = () => {
               <CardProduct.Footer
                 price={product.price}
                 id={product.id}
-                handleAddToCart={handleAddtoCart}
+                handleAddToCart={handleAddToCart}
               />
             </CardProduct>
           ))}
@@ -118,6 +145,21 @@ const ProductsPage = () => {
                   </tr>
                 );
               })}
+              <tr ref={totalPriceRef}>
+                <td colSpan={3}>
+                  <b>Price</b>
+                </td>
+                <td>
+                  <b>
+                    {" "}
+                    Rp{" "}
+                    {totalPrice.toLocaleString("id-ID", {
+                      styles: "currency",
+                      currency: "IDR",
+                    })}
+                  </b>
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>

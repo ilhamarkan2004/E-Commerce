@@ -4,6 +4,10 @@ class Counter extends React.Component {
   state = {
     counter: 0,
   };
+
+  componentDidMount(){
+    
+  }
   render() {
     return (
       <div className="flex items-center">
