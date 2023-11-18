@@ -6,7 +6,7 @@ const LoginPage = () => {
   return (
     <AuthLayouts title="Login" type="login">
       <FormLogin />
-         </AuthLayouts>
+    </AuthLayouts>
   );
 };
 export default LoginPage;
