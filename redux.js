@@ -24,14 +24,13 @@ const cartReducer = (
 const store = legacy_createStore(cartReducer);
 console.log("create store : ", store.getState());
 
-
 //subscribe
 store.subscribe(() => {
-  console.log("STORE CHANGE : ",store.getState())
-})
+  console.log("STORE CHANGE : ", store.getState());
+});
 
 //dispatch
-const action1 = {type:'ADD_TO_CART',payload:{id:2,qty:3}}
-store.dispatch(action1)
-const action2 = {type:'ADD_TO_CART',payload:{id:3,qty:30}}
-store.dispatch(action2)
+const action1 = { type: "ADD_TO_CART", payload: { id: 2, qty: 3 } };
+store.dispatch(action1);
+const action2 = { type: "ADD_TO_CART", payload: { id: 3, qty: 30 } };
+store.dispatch(action2);
